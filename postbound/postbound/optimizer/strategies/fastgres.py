@@ -6,9 +6,16 @@ from postbound.experiments import workloads
 from postbound.qal import qal
 from postbound.optimizer import jointree, physops, stages
 
+from postbound.optimizer.strategies.FASTgres_Postbound_Integration import public_api as fga
+from postbound.optimizer.strategies.FASTgres_Postbound_Integration import definitions
+from postbound.optimizer.strategies.FASTgres_Postbound_Integration.hint_sets import HintSet
 
-def hints_to_operators(hints) -> physops.PhysicalOperatorAssignment:
-    pass
+
+def hints_to_operators(hints: int) -> physops.PhysicalOperatorAssignment:
+    hint_set = HintSet(hints)
+    operators = physops.PhysicalOperatorAssignment()
+    operators.global_settings = {hint_set.get_name(i): bool(hint_set.get(i)) for i in range(len(hint_set.operators))}
+    return operators
 
 
 def determine_model_file(workload: workloads.Workload) -> str:
@@ -23,13 +30,23 @@ class FastgresOperatorSelection(stages.PhysicalOperatorSelection):
 
     def __init__(self, workload: workloads.Workload, *, rand_seed: float = random.random()) -> None:
         # TODO: fastgres initialization, model loading, sanity checks
-        self.model = None
+
+        if "job" in workload.name:
+            dbc = definitions.PG_IMDB
+        elif "stack" in workload.name:
+            dbc = definitions.PG_STACK_OVERFLOW
+        else:
+            raise NotImplementedError("Currently only JOB and Stack are supported for FASTgres.")
+
+        fastgres = fga.Fastgres(workload, dbc)
+        self.model = fastgres
+
         random.seed(rand_seed)
         super().__init__()
 
     def select_physical_operators(self, query: qal.SqlQuery,
                                   join_order: Optional[jointree.LogicalJoinTree | jointree.PhysicalQueryPlan]
                                   ) -> physops.PhysicalOperatorAssignment:
-        hints = self.model.predict(str(query))
+        hints = self.model.predict("1a.sql")
         assignment = hints_to_operators(hints)
         return assignment

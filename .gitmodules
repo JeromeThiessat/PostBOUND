@@ -2,6 +2,6 @@
 	path = postgres/ssb-kit
 	url = https://github.com/gregrahn/ssb-kit.git
 	ignore = dirty
-[submodule "postbound/postbound/optimizer/strategies/FASTgres"]
-	path = postbound/postbound/optimizer/strategies/FASTgres
-	url = https://github.com/JeromeThiessat/FASTgres
+[submodule "postbound/postbound/optimizer/strategies/FASTgres_Postbound_Integration"]
+	path = postbound/postbound/optimizer/strategies/FASTgres_Postbound_Integration
+	url = https://github.com/JeromeThiessat/FASTgres_Postbound_Integration

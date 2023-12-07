@@ -15,7 +15,7 @@ from postbound.experiments import workloads, runner
 from postbound.optimizer.strategies import fastgres
 
 # Setup: we optimize queries from the Join Order Benchmark on a Postgres database
-postgres_db = postgres.connect()
+postgres_db = postgres.connect(connect_string="dbname=imdb user=postgres password=postgres host=localhost port=5432")
 job_workload = workloads.job()
 
 # Obtain a training and test split

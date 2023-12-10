@@ -13,6 +13,9 @@ from postbound import postbound as pb
 from postbound.db import postgres
 from postbound.experiments import workloads, runner
 from postbound.optimizer.strategies import fastgres
+import os
+
+os.chdir('../../workloads')
 
 # Setup: we optimize queries from the Join Order Benchmark on a Postgres database
 postgres_db = postgres.connect(connect_string="dbname=imdb user=postgres password=postgres host=localhost port=5432")
@@ -34,3 +37,6 @@ result_df = runner.optimize_and_execute_workload(test_queries, pipeline)
 
 print("Benchmark results:")
 print(result_df)
+
+# working dir cleanup
+fastgres_recommender.close()
